@@ -1,12 +1,13 @@
+import React from 'react';
 import { useTour } from 'context/Provider';
-
 import Tour from 'reactour';
 
-const Tutorial = () => {
+const Tutorial: React.FC = () => {
   const {
     setTour,
     state: { isTourOpen },
   } = useTour();
+
   return (
     <Tour
       accentColor="#ff2323"
@@ -59,7 +60,7 @@ const Tutorial = () => {
                 Resizing and moving all the windows in this game (hand icon)
               </li>
               <li>Pause the game (pause icon)</li>
-              <li>Enter in fullscreen (ícone de fullscreen)</li>
+              <li>Enter in fullscreen (fullscreen icon)</li>
             </>
           ),
           position: 'right',

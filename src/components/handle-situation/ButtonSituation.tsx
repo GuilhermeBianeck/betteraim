@@ -1,3 +1,4 @@
+import React from 'react';
 import Refresh from 'assets/graphics/button-situation/refresh.png';
 import { useGame } from 'context/Provider';
 
@@ -6,18 +7,20 @@ type Props = {
   color?: string;
 };
 
-const ButtonSituation = ({ label = 'Try again', color = '#FF2323' }: Props) => {
+const ButtonSituation: React.FC<Props> = ({ label = 'Try again', color = '#FF2323' }) => {
   const {
     state: { situation, phase },
     setIsGaming,
     setTimer,
   } = useGame();
+
   const handleClick = () => {
     if (situation === 'passed' || situation === 'rejected') {
       setIsGaming('start');
       setTimer(phase * 100 + 40000);
     }
   };
+
   return (
     <div className="handle-situation__button-container">
       <button

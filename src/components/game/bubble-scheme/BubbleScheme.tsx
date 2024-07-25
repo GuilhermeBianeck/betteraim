@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useGame } from 'context/Provider';
 import { bubbleAdd } from 'utils';
 import './bubble-scheme.scss';
 import { nanoid } from 'nanoid';
 
-const BubblesScheme = () => {
+const BubblesScheme: React.FC = () => {
   const {
     setTimer,
     state: {
@@ -30,9 +30,8 @@ const BubblesScheme = () => {
       setTimer(phase * 1000 + 40000);
 
       let counter = 1000;
-      // Recursive timeout to increase time between bubbles
-
       let bubblesInsertedQuantity = 0;
+      
       const RecursiveTimeout = () => {
         setBubbles({
           type: 'add',
@@ -40,15 +39,12 @@ const BubblesScheme = () => {
         });
 
         bubblesInsertedQuantity++;
-        // Defines how much time should have between one bubble and another
         counter = counter * 1.5 - phase * 100;
 
-        // Timeout that calls recursive timeout, but with a increased time on 'counter'
         const lowTimeout = setTimeout(RecursiveTimeout, counter);
 
-        // If bubbles quantity has reached, the timeout it's cleared and no bubbles is gonna be inserted
         if (bubblesInsertedQuantity === bubblesQuantity) {
-          clearInterval(lowTimeout);
+          clearTimeout(lowTimeout);
         }
       };
 
@@ -56,9 +52,9 @@ const BubblesScheme = () => {
 
       return () => clearTimeout(bubblesTimeout);
     }
-  }, []);
+  }, [situation, isWindowFetched, setTimer, phase, windowDimensions, bubbleSize, bubblesQuantity, setBubbles]);
 
-  const handleClick = (id: number) => {
+  const handleClick = (id: string) => {
     if (!isPaused && !isDragable) {
       setClickQuantity('increase');
       setBubbles({ type: 'delete', content: id });
@@ -72,7 +68,7 @@ const BubblesScheme = () => {
     }
   };
 
-  const handleTimeout = (id: number) => {
+  const handleTimeout = (id: string) => {
     if (!isResizing) {
       setClickQuantity('decrease');
     }

@@ -1,18 +1,18 @@
-import  { useEffect } from 'react';
-import { BubbleScheme } from '../bubble-scheme';
-import { Rnd, RndResizeCallback, RndDragCallback } from 'react-rnd';
+import React, { useEffect } from 'react';
+import { Rnd } from 'react-rnd';
 import FullScreen from 'react-full-screen';
 import { useGame } from 'context/Provider';
-import './game-window.scss';
-import { TimeBar } from 'components/game/time-bar';
-import { PauseIcon } from 'components/game/pause-icon';
-import { HandleSituation } from 'components/handle-situation';
+import BubbleScheme from '../bubble-scheme/BubbleScheme';
+import 'components/game/time-bar/TimeBar';
+import 'components/game/pause-icon/PauseIcon';
+import HandleSituation from 'components/handle-situation/HandleSituation';
 import { useMediaQuery } from 'react-responsive';
 import { getLocalStorage, StorageItems, setLocalStorage } from 'utils';
 import { responsiveWindow } from 'utils/responsive-window';
 import ShowLevel from '../show-level/ShowLevel';
+import './game-window.scss';
 
-const GameWindow = () => {
+const GameWindow: React.FC = () => {
   const {
     state: {
       windowDimensions,
@@ -44,7 +44,7 @@ const GameWindow = () => {
     if (is790 && isWindowFetched) {
       setResetWindows(true);
     }
-  }, [isWindowFetched]);
+  }, [isWindowFetched, is790, setResetWindows]);
 
   useEffect(() => {
     const localStorageWindowPositioning = getLocalStorage({
@@ -60,7 +60,7 @@ const GameWindow = () => {
         type: 'windowDimensions',
         content: {
           x: window.screen.width / 2 - windowDimensions.width / 2,
-          y: window.screen.height / 2 - windowDimensions.height / 2 - 62,
+          y: window.screen.height / 2 - windowDimensions.height / 2,
         },
       });
     }
@@ -68,12 +68,9 @@ const GameWindow = () => {
     const localStorageWindowDimensions = getLocalStorage({
       localString: StorageItems.windowDimensions,
     });
-
     if (localStorageWindowDimensions) {
-      setWindowData({
-        type: 'windowDimensions',
-        content: localStorageWindowDimensions,
-      });
+      const { width, height } = localStorageWindowDimensions;
+      setWindowData({ type: 'windowDimensions', content: { width, height } });
     } else {
       responsiveWindow(
         setWindowData,
@@ -86,23 +83,29 @@ const GameWindow = () => {
         is360
       );
     }
-    setIsWindowFetched(true);
-    setResetWindows(false);
-  }, [resetWindows, isWindowFetched]);
+  }, [
+    setWindowData,
+    isMin790,
+    is790,
+    is670,
+    is585,
+    is485,
+    is415,
+    is360,
+    windowDimensions.width,
+    windowDimensions.height,
+  ]);
 
-  useEffect(() => {
-    setBubbles({ type: 'update-position' });
-    setIsResizing(true);
-    setIsResizing(false);
-  }, [windowDimensions]);
+  const handleDragStop: RndDragCallback = (_e, data) => {
+    const { x, y } = data;
+    setWindowData({ type: 'windowDimensions', content: { x, y } });
+    setLocalStorage({
+      localString: StorageItems.windowPositioning,
+      localObject: { x, y },
+    });
+  };
 
-  const handleResizeStop: RndResizeCallback = (
-    _e,
-    _dir,
-    ref,
-    _delta,
-    position
-  ) => {
+  const handleResizeStop: RndResizeCallback = (_e, _dir, ref, _delta, position) => {
     const width = ref.offsetWidth;
     const height = ref.offsetHeight;
     setWindowData({ type: 'windowDimensions', content: { width, height } });
@@ -120,49 +123,10 @@ const GameWindow = () => {
     });
   };
 
-  const handleDragStart = () => {
-    setIsDraging(true);
+  const handleFullScreenChange = (isFull: boolean) => {
+    setIsFullScreen(isFull);
   };
 
-  const handleDragStop: RndDragCallback = (_e, data) => {
-    setIsDraging(false);
-    const { x, y } = data;
-    setWindowData({ type: 'windowDimensions', content: { x, y } });
-    setLocalStorage({
-      localString: StorageItems.windowPositioning,
-      localObject: { x, y },
-    });
-  };
-
-  const handleFullScreenHandle = (enabled: boolean) => {
-    if (!enabled) {
-      setIsFullScreen(false);
-
-      const localDimensions = getLocalStorage({
-        localString: StorageItems.windowDimensions,
-      });
-      if (localDimensions) {
-        const { width, height } = localDimensions;
-        setWindowData({ type: 'windowDimensions', content: { width, height } });
-      } else {
-        responsiveWindow(
-          setWindowData,
-          isMin790,
-          is790,
-          is670,
-          is585,
-          is485,
-          is415,
-          is360
-        );
-      }
-    } else {
-      setWindowData({
-        type: 'windowDimensions',
-        content: { width: window.screen.height, height: window.screen.width },
-      });
-    }
-  };
   return (
     <Rnd
       data-testid="game-window"
@@ -170,7 +134,6 @@ const GameWindow = () => {
       minWidth={63}
       className="game-window"
       bounds=".App"
-      // lockAspectRatio={true}
       disableDragging={!isDragable}
       enableResizing={isDragable}
       onClick={() => setClick(false)}
@@ -183,13 +146,18 @@ const GameWindow = () => {
             ? 'linear-gradient(0deg, rgba(255, 255, 255, 0.41), rgba(255, 255, 255, 0.41)), #2d2d2d'
             : 'linear-gradient(129.44deg, rgba(255, 255, 255, 0.23) -18.63%, rgba(255, 255, 255, 0) 100.85%), #2D2D2D',
       }}
-      default={windowDimensions}
-      size={windowDimensions}
-      onDragStart={handleDragStart}
-      onDragStop={handleDragStop}
+      default={{
+        width: windowDimensions.width,
+        height: windowDimensions.height,
+      }}
+      size={{
+        width: windowDimensions.width,
+        height: windowDimensions.height,
+      }}
       position={{ x: windowDimensions.x, y: windowDimensions.y }}
+      onDragStop={handleDragStop}
     >
-      <FullScreen enabled={isFullScreen} onChange={handleFullScreenHandle}>
+      <FullScreen enabled={isFullScreen} onChange={handleFullScreenChange}>
         {situation === 'rejected' || situation === 'passed' ? (
           <HandleSituation />
         ) : situation === 'start' && isWindowFetched ? (

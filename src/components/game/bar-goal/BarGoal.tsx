@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Rnd, RndResizeCallback, RndDragCallback } from 'react-rnd';
+import { Rnd } from 'react-rnd';
 import { useGame } from 'context/Provider';
 import {
   StorageItems,
@@ -63,20 +63,20 @@ const BarGoal = () => {
         content: { width: windowDimensions.width - (127 + 8), height: 31 },
       });
     }
-  }, [resetWindows]);
+  }, [resetWindows, setWindowData, windowDimensions.height, windowDimensions.width]);
 
   useEffect(() => {
     if (percentage >= 100) {
       setIsGaming('passed');
       setPhase('increase');
     }
-  }, [percentage]);
+  }, [percentage, setIsGaming, setPhase]);
 
   useEffect(() => {
     setSimpleLocalStorage('LEVEL', phase);
   }, [phase]);
 
-  const handleDragStop: RndDragCallback = (_e, data) => {
+  const handleDragStop = (_e, data) => {
     const { x, y } = data;
     setWindowData({ type: 'barGoalDimensions', content: { x, y } });
     setLocalStorage({
@@ -85,13 +85,7 @@ const BarGoal = () => {
     });
   };
 
-  const handleResizeStop: RndResizeCallback = (
-    _e,
-    _dir,
-    ref,
-    _delta,
-    position
-  ) => {
+  const handleResizeStop = (_e, _dir, ref, _delta, position) => {
     const width = ref.offsetWidth;
     const height = ref.offsetHeight;
     setWindowData({ type: 'barGoalDimensions', content: { width, height } });
@@ -116,8 +110,7 @@ const BarGoal = () => {
       className="bar__wrapper"
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
-      size={barGoalDimensions}
-      default={barGoalDimensions}
+      size={{ width: barGoalDimensions.width, height: barGoalDimensions.height }}
       position={{ x: barGoalDimensions.x, y: barGoalDimensions.y }}
     >
       <div

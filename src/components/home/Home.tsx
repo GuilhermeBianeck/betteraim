@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './home.scss';
-
 import BubblesBackground from 'assets/bubbles-background.png';
 import { useGame } from 'context/Provider';
 import { getSimpleLocalStorage } from 'utils';
 
-const Home = () => {
+const Home: React.FC = () => {
   const { setIsGaming, setPhase } = useGame();
   const [levelIsFetched, setLevelIsFetched] = useState(false);
 
@@ -15,7 +14,7 @@ const Home = () => {
       setPhase(Number(localLevel));
     }
     setLevelIsFetched(true);
-  }, []);
+  }, [setPhase]);
 
   const handleClick = () => {
     if (levelIsFetched) {

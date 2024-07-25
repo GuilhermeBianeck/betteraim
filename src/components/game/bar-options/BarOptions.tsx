@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
+import { Rnd } from 'react-rnd';
 import hand from 'assets/graphics/icons/hand.svg';
 import pause from 'assets/graphics/icons/pause.svg';
 import Option from './Option';
@@ -63,9 +63,9 @@ const BarOptions = () => {
         content: { width: 127, height: 31 },
       });
     }
-  }, [resetWindows]);
+  }, [resetWindows, setWindowData, windowDimensions.height, windowDimensions.width]);
 
-  const handleDragStop: RndDragCallback = (_e, data) => {
+  const handleDragStop = (_e, data) => {
     const { x, y } = data;
     setWindowData({
       type: 'barOptionsDimensions',
@@ -77,13 +77,7 @@ const BarOptions = () => {
     });
   };
 
-  const handleResizeStop: RndResizeCallback = (
-    _e,
-    _dir,
-    ref,
-    _delta,
-    position
-  ) => {
+  const handleResizeStop = (_e, _dir, ref, _delta, position) => {
     const width = ref.offsetWidth;
     const height = ref.offsetHeight;
     setWindowData({
@@ -106,7 +100,9 @@ const BarOptions = () => {
       localObject: { x, y },
     });
   };
+
   const is790 = useMediaQuery({ maxWidth: 790 });
+
   return (
     <Rnd
       bounds=".App"
@@ -118,7 +114,7 @@ const BarOptions = () => {
       enableResizing={isDragable}
       onResizeStop={handleResizeStop}
       onDragStop={handleDragStop}
-      size={barOptionsDimensions}
+      size={{ width: barOptionsDimensions.width, height: barOptionsDimensions.height }}
       position={{ x: barOptionsDimensions.x, y: barOptionsDimensions.y }}
     >
       <div

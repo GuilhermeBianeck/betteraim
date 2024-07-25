@@ -1,9 +1,9 @@
+import React from 'react';
 import { useGame } from 'context/Provider';
-
 import ButtonSituation from './ButtonSituation';
 import './handle-situation.scss';
 
-const HandleSituation = () => {
+const HandleSituation: React.FC = () => {
   const {
     state: { situation, phase },
   } = useGame();

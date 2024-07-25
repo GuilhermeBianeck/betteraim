@@ -1,3 +1,4 @@
+import React from 'react';
 import { HelpIcon } from 'components/game/help-icon';
 import './App.scss';
 import { Home } from 'components/home';
@@ -8,7 +9,7 @@ import BarGoal from 'components/game/bar-goal/BarGoal';
 import BarOptions from 'components/game/bar-options/BarOptions';
 import Reset from 'components/reset/Reset';
 
-const App = () => {
+const App: React.FC = () => {
   const {
     state: { situation, isWindowFetched },
   } = useGame();

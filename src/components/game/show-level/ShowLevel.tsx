@@ -1,7 +1,8 @@
+import React from 'react';
 import { useGame } from 'context';
 import './show-level.scss';
 
-const ShowLevel = () => {
+const ShowLevel: React.FC = () => {
   const {
     state: { phase },
   } = useGame();

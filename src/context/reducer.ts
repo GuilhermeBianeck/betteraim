@@ -29,17 +29,13 @@ export const initialState: State = {
 export const gameReducer = (state: State, { type, payload }: Actions) => {
   switch (type) {
     case ActionTypes.setWindowData:
-      // eslint-disable-next-line no-case-declarations
-      const {
-        content,
-        type,
-      }: {
+      const { content, type: contentType } = payload as {
         type: 'barGoalDimensions' | 'barOptionsDimensions' | 'windowDimensions';
         content: unknown[];
-      } = payload;
+      };
       return {
         ...state,
-        [type]: { ...state[type], ...content },
+        [contentType]: { ...state[contentType], ...content },
       };
     case ActionTypes.setTour:
       return {
@@ -62,33 +58,18 @@ export const gameReducer = (state: State, { type, payload }: Actions) => {
         isResizing: payload,
       };
     case ActionTypes.setIsFullScreen:
-      if (payload) {
-        return {
-          ...state,
-          isFullScreen: payload,
-        };
-      }
       return {
         ...state,
-        isFullScreen: !state.isFullScreen,
+        isFullScreen: payload ?? !state.isFullScreen,
       };
     case ActionTypes.setIsGaming:
       if (payload === 'rejected' || payload === 'passed') {
         return {
           ...state,
+          isGaming: payload,
           bubbles: [],
           points: 0,
-          isGaming: false,
-          situation: payload,
-        };
-      }
-      if (payload === 'start') {
-        return {
-          ...state,
-          bubbles: [],
-          points: 0,
-          isGaming: true,
-          situation: payload,
+          clickQuantity: 0,
         };
       }
       return {
@@ -96,12 +77,6 @@ export const gameReducer = (state: State, { type, payload }: Actions) => {
         isGaming: payload,
       };
     case ActionTypes.setTimer:
-      if (payload === 'decrease') {
-        return {
-          ...state,
-          timer: state.timer - 1,
-        };
-      }
       return {
         ...state,
         timer: payload,
@@ -110,15 +85,15 @@ export const gameReducer = (state: State, { type, payload }: Actions) => {
       if (payload === 'increase') {
         return {
           ...state,
-          points: state.points + 5,
-          clickQuantity: state.clickQuantity++,
+          clickQuantity: state.clickQuantity + 1,
+          points: state.points + 1,
         };
       }
       if (payload === 'decrease') {
         return {
           ...state,
-          points: state.points <= 0 ? 0 : state.points - 5,
-          clickQuantity: state.clickQuantity++,
+          clickQuantity: state.clickQuantity - 1,
+          points: state.points - 1,
         };
       }
       return {
@@ -132,31 +107,7 @@ export const gameReducer = (state: State, { type, payload }: Actions) => {
           bubbles: [...state.bubbles, payload.content],
         };
       }
-      if (payload.type === 'reset') {
-        return {
-          ...state,
-          bubbles: [],
-        };
-      }
       if (payload.type === 'update-position') {
-        return {
-          ...state,
-          bubbles: state.bubbles.map((bubble) => {
-            return {
-              ...bubble,
-              left: leftRandomPosition({
-                gameWidth: state.windowDimensions.width,
-                bubbleSize: state.bubbleSize,
-              }),
-              top: topRandomPosition({
-                gameHeight: state.windowDimensions.height,
-                bubbleSize: state.bubbleSize,
-              }),
-            };
-          }),
-        };
-      }
-      if (payload.type === 'update-position-to') {
         return {
           ...state,
           bubbles: state.bubbles.map((bubble) => {
@@ -183,9 +134,7 @@ export const gameReducer = (state: State, { type, payload }: Actions) => {
       if (payload.type === 'delete') {
         return {
           ...state,
-          bubbles: state.bubbles.filter(
-            (bubble) => bubble.id !== payload.content
-          ),
+          bubbles: state.bubbles.filter((bubble) => bubble.id !== payload.content),
         };
       }
       return {
@@ -205,26 +154,14 @@ export const gameReducer = (state: State, { type, payload }: Actions) => {
         phase: payload,
       };
     case ActionTypes.setIsDragable:
-      if (payload) {
-        return {
-          ...state,
-          isDragable: payload,
-        };
-      }
       return {
         ...state,
-        isDragable: !state.isDragable,
+        isDragable: payload ?? !state.isDragable,
       };
     case ActionTypes.setIsPaused:
-      if (payload) {
-        return {
-          ...state,
-          isPaused: payload,
-        };
-      }
       return {
         ...state,
-        isPaused: !state.isPaused,
+        isPaused: payload ?? !state.isPaused,
       };
     case ActionTypes.setSituation:
       return {
@@ -241,8 +178,7 @@ export const gameReducer = (state: State, { type, payload }: Actions) => {
         ...state,
         resetWindows: payload,
       };
-    default: {
+    default:
       throw new Error(`The action ${type} isn't supported`);
-    }
   }
 };

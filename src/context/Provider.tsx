@@ -1,18 +1,10 @@
+import React, { useContext, createContext, ReactNode, useReducer, Dispatch, useMemo } from 'react';
 import { ActionTypes, State, Actions } from './types';
-import {
-  useContext,
-  createContext,
-  ReactNode,
-  useReducer,
-  Dispatch,
-  useMemo,
-} from 'react';
 import { gameReducer, initialState } from './reducer';
 
-export const Context = createContext<[State, Dispatch<Actions>] | null>(null);
+const Context = createContext<[State, Dispatch<Actions>] | null>(null);
 
 export const useGame = () => {
-  // Context creation
   const context = useContext(Context);
 
   if (!context) {
@@ -21,64 +13,22 @@ export const useGame = () => {
   const [state, dispatch] = context;
 
   // Actions
-  const setClick = (click: boolean) =>
-    dispatch({ type: ActionTypes.setClick, payload: click });
-  const setIsResizing = (isResizing: boolean) =>
-    dispatch({ type: ActionTypes.setIsResizing, payload: isResizing });
+  const setClick = (click: boolean) => dispatch({ type: ActionTypes.setClick, payload: click });
+  const setIsResizing = (isResizing: boolean) => dispatch({ type: ActionTypes.setIsResizing, payload: isResizing });
+  const setIsGaming = (isGaming: 'start' | 'rejected' | 'passed' | boolean) => dispatch({ type: ActionTypes.setIsGaming, payload: isGaming });
+  const setTimer = (timer: number | string) => dispatch({ type: ActionTypes.setTimer, payload: timer });
+  const setClickQuantity = (quantity: 'increase' | 'decrease' | number) => dispatch({ type: ActionTypes.setClickQuantity, payload: quantity });
+  const setBubbles = ({ type, content }: { type: 'add' | 'delete' | 'update-position' | 'reset' | 'update-position-to'; content?: number | { id: string; width: string; height: string; bubbleSize: number } }) => dispatch({ type: ActionTypes.setBubbles, payload: { type, content } });
+  const setPhase = (phase: 'increase' | number) => dispatch({ type: ActionTypes.setPhase, payload: phase });
+  const setIsDragable = (isDragable?: boolean) => dispatch({ type: ActionTypes.setIsDragable, payload: isDragable });
+  const setIsPaused = (isPaused?: boolean) => dispatch({ type: ActionTypes.setIsPaused, payload: isPaused });
+  const setSituation = (situation?: '' | 'passed' | 'rejected') => dispatch({ type: ActionTypes.setSituation, payload: situation });
+  const setIsWindowFetched = (isWindowFetched: boolean) => dispatch({ type: ActionTypes.setIsWindowFetched, payload: isWindowFetched });
+  const setIsFullScreen = (isFullScreen?: boolean) => dispatch({ type: ActionTypes.setIsFullScreen, payload: isFullScreen });
+  const setWindowData = ({ type, content }: { type: 'barGoalDimensions' | 'barOptionsDimensions' | 'windowDimensions'; content?: { x: number; y: number } | { width: number; height: number } }) => dispatch({ type: ActionTypes.setWindowData, payload: { type, content } });
+  const setIsDraging = (isDraging: boolean) => dispatch({ type: ActionTypes.setIsDraging, payload: isDraging });
+  const setResetWindows = (resetWindows: boolean) => dispatch({ type: ActionTypes.setResetWindows, payload: resetWindows });
 
-  const setIsGaming = (isGaming: 'start' | 'rejected' | 'passed' | boolean) =>
-    dispatch({ type: ActionTypes.setIsGaming, payload: isGaming });
-
-  const setTimer = (timer: number | string) => {
-    dispatch({ type: ActionTypes.setTimer, payload: timer });
-  };
-
-  const setClickQuantity = (quantity: 'increase' | 'decrease' | number) =>
-    dispatch({ type: ActionTypes.setClickQuantity, payload: quantity });
-
-  const setBubbles = ({
-    type,
-    content,
-  }: {
-    type: 'add' | 'delete' | 'update-position' | 'reset' | 'update-position-to';
-    content?:
-      | number
-      | { id: string; width: string; height: string; bubbleSize: number };
-  }) => dispatch({ type: ActionTypes.setBubbles, payload: { type, content } });
-
-  const setPhase = (phase: 'increase' | number) =>
-    dispatch({ type: ActionTypes.setPhase, payload: phase });
-
-  const setIsDragable = (isDragable?: boolean) =>
-    dispatch({ type: ActionTypes.setIsDragable, payload: isDragable });
-  const setIsPaused = (isPaused?: boolean) =>
-    dispatch({ type: ActionTypes.setIsPaused, payload: isPaused });
-  const setSituation = (situation?: '' | 'passed' | 'rejected') =>
-    dispatch({ type: ActionTypes.setSituation, payload: situation });
-  const setIsWindowFetched = (isWindowFetched: boolean) =>
-    dispatch({
-      type: ActionTypes.setIsWindowFetched,
-      payload: isWindowFetched,
-    });
-
-  const setIsFullScreen = (isFullScreen?: boolean) =>
-    dispatch({ type: ActionTypes.setIsFullScreen, payload: isFullScreen });
-
-  const setWindowData = ({
-    type,
-    content,
-  }: {
-    type: 'barGoalDimensions' | 'barOptionsDimensions' | 'windowDimensions';
-    content?: { x: number; y: number } | { width: number; height: number };
-  }) =>
-    dispatch({ type: ActionTypes.setWindowData, payload: { type, content } });
-
-  const setIsDraging = (isDraging: boolean) => {
-    dispatch({ type: ActionTypes.setIsDraging, payload: isDraging });
-  };
-  const setResetWindows = (resetWindows: boolean) => {
-    dispatch({ type: ActionTypes.setResetWindows, payload: resetWindows });
-  };
   return {
     state,
     setClick,
@@ -107,8 +57,7 @@ export const useTour = () => {
   }
   const [state, dispatch] = context;
 
-  const setTour = (isOpen: boolean) =>
-    dispatch({ type: ActionTypes.setTour, payload: isOpen });
+  const setTour = (isOpen: boolean) => dispatch({ type: ActionTypes.setTour, payload: isOpen });
   return { state, setTour, dispatch };
 };
 
@@ -117,12 +66,12 @@ type GameProps = {
   children: ReactNode;
 };
 
-export const Provider = ({ children }: GameProps) => {
+export const Provider: React.FC<GameProps> = ({ children }) => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
+  const memoState = useMemo(() => ({ state, dispatch }), [state]);
 
-  const { state: memoState } = useMemo(() => ({ state, dispatch }), [state]);
   return (
-    <Context.Provider value={[memoState, dispatch]}>
+    <Context.Provider value={[memoState.state, dispatch]}>
       {children}
     </Context.Provider>
   );

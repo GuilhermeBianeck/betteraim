@@ -1,8 +1,9 @@
+import React from 'react';
 import { useGame } from 'context/Provider';
 import pausesvg from 'assets/graphics/pauseicon.svg';
 import './pause-icon.scss';
 
-const PauseIcon = () => {
+const PauseIcon: React.FC = () => {
   const {
     state: { isPaused },
   } = useGame();
@@ -11,4 +12,5 @@ const PauseIcon = () => {
     <img alt="paused" src={pausesvg} className="pause-icon" />
   ) : null;
 };
+
 export default PauseIcon;

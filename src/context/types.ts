@@ -12,7 +12,14 @@ export interface State {
   isWindowFetched: boolean;
   points: number;
   click: boolean;
-  bubbles: any[];
+  bubbles: Array<{
+    id: string;
+    width: string;
+    height: string;
+    left: string;
+    top: string;
+    bubbleSize: number;
+  }>;
   bubbleSize: number;
   phase: number;
   timer: number;
@@ -44,5 +51,4 @@ export enum ActionTypes {
   setIsFullScreen = 'SET_FULLSCREEN',
   setWindowData = 'SET_WINDOW_DATA',
   setIsDraging = 'SET_IS_DRAGING',
-  setResetWindows = 'SET_RESET_WINDOWS',
-}
+  setResetWindows = '

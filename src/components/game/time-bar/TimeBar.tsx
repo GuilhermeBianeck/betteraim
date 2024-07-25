@@ -1,8 +1,8 @@
+import React from 'react';
 import { useGame } from 'context/Provider';
-
 import './time-bar.scss';
 
-const Timebar = () => {
+const TimeBar: React.FC = () => {
   const {
     state: { isGaming, timer, isPaused },
     setIsGaming,
@@ -29,4 +29,4 @@ const Timebar = () => {
   ) : null;
 };
 
-export default Timebar;
+export default TimeBar;

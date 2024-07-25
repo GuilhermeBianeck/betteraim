@@ -11,11 +11,11 @@ beforeEach(() => {
 test('if game works correctly', async () => {
   render(<App />);
 
-  userEvent.click(screen.getByRole('button', { name: 'bubbles Play' }));
+  userEvent.click(screen.getByRole('button', { name: /bubbles Play/i }));
 
   await waitFor(() => {
     expect(
-      screen.queryByRole('button', { name: 'bubbles Play' })
+      screen.queryByRole('button', { name: /bubbles Play/i })
     ).not.toBeInTheDocument();
   });
 
@@ -28,36 +28,32 @@ test('if game works correctly', async () => {
 
   act(() => {
     let counter = 1000;
-    // Recursive timeout to increase time between bubbles
-
     let bubblesInsertedQuantity = 0;
-    const RecursiveTimeout = () => {
+
+    const recursiveTimeout = () => {
       bubblesInsertedQuantity++;
-      // Defines how much time should have between one bubble and another
       counter = counter * 1.5 - 100;
 
-      // Timeout that calls recursive timeout, but with a increased time on 'counter'
-      const lowTimeout = setTimeout(RecursiveTimeout, counter);
+      const lowTimeout = setTimeout(recursiveTimeout, counter);
 
-      // If bubbles quantity has reached, the timeout it's cleared and no bubbles is gonna be inserted
       if (bubblesInsertedQuantity === 5) {
         clearInterval(lowTimeout);
-        expect(screen.getAllByTestId('bubble-item').length + 1).toBe(5);
+        expect(screen.getAllByTestId('bubble-item').length).toBe(5);
       }
     };
 
-    setTimeout(RecursiveTimeout, counter);
+    setTimeout(recursiveTimeout, counter);
 
     jest.runAllTimers();
   });
 
-  userEvent.click(screen.getByRole('button', { name: 'pause' }));
+  userEvent.click(screen.getByRole('button', { name: /pause/i }));
 
   expect(screen.getAllByTestId('bubble-item')[0]).toHaveStyle(
     `animation: bubblesAnimation 3s ease-in-out alternate forwards paused`
   );
 
-  userEvent.click(screen.getByRole('button', { name: 'pause' }));
+  userEvent.click(screen.getByRole('button', { name: /pause/i }));
 
   expect(screen.getAllByTestId('bubble-item')[0]).toHaveStyle(
     `animation: bubblesAnimation 3s ease-in-out alternate forwards`
@@ -65,10 +61,7 @@ test('if game works correctly', async () => {
 });
 
 test('if the limits of generated random positions work correctly', () => {
-  expect(
-    Number(leftRandomPosition({ gameWidth: 744, bubbleSize: 40 }).slice(0, -2))
-  ).toBeGreaterThanOrEqual(0);
-  expect(
-    Number(leftRandomPosition({ gameWidth: 744, bubbleSize: 40 }).slice(0, -2))
-  ).toBeLessThanOrEqual(744);
+  const position = Number(leftRandomPosition({ gameWidth: 744, bubbleSize: 40 }).slice(0, -2));
+  expect(position).toBeGreaterThanOrEqual(0);
+  expect(position).toBeLessThanOrEqual(744);
 });

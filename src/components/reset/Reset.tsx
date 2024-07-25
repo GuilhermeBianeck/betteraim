@@ -1,8 +1,8 @@
+import React from 'react';
 import { useGame } from 'context';
-
 import './reset.scss';
 
-const Reset = () => {
+const Reset: React.FC = () => {
   const {
     state: { isDragable, isResizing },
     setResetWindows,

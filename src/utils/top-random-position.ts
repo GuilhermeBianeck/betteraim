@@ -6,7 +6,7 @@ const topRandomPosition = ({
 }: {
   gameHeight: number;
   bubbleSize: number;
-}) =>
+}): string =>
   Math.floor(Math.random() * (gameHeight - bubbleSize) - gameHeight + 1) +
   gameHeight +
   'px';
